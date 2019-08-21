@@ -1,0 +1,50 @@
+.electra-articles {
+	display: block;
+	padding: 10px;
+	margin: 0 -10px;
+}
+
+.electra-articles .element {
+	display: block;
+	margin-bottom: 15px;
+	text-decoration: none;
+}
+
+.electra-articles .element p {margin: 0;}
+
+.electra-articles .ttl {
+	display: block; 
+	font-weight:bold; 
+	margin-bottom: 10px;
+	font-size: 14px;
+}
+
+.electra-articles .anons {
+	font-size:8pt; 
+	text-align:justify;
+	margin-bottom: 5px;
+}
+
+
+.electra-articles .more {
+	text-align:right;
+	margin: 1em 0;
+}
+
+.electra-articles .more span {
+	text-decoration: underline;
+}
+
+
+.electra-articles .element:hover .ttl,
+.electra-articles .element:hover .more {
+	color:red;
+}
+
+@media only screen and (max-width: 1024px) {
+	.electra-articles {
+		display: block;
+		margin: 0;
+	}
+
+}
