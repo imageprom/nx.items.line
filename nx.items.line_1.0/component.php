@@ -15,12 +15,12 @@ global $arrFilter, $arrFilterAdd;
 if(!is_array($arrFilter)) $arrFilter = array();	
 if(!is_array($arrFilterAdd)) $arrFilterAdd = array();
 
-if(strlen($arParams["FILTER_NAME"])<=0 || !preg_match("/^[A-Za-z_][A-Za-z01-9_]*$/", $arParams["FILTER_NAME"]))
-{
+$arParams['AJAX'] = isset($_REQUEST['nx_ajax_ibl_action']) && $_REQUEST['nx_ajax_ibl_action'] == 'Y';
+
+if(strlen($arParams["FILTER_NAME"])<=0 || !preg_match("/^[A-Za-z_][A-Za-z01-9_]*$/", $arParams["FILTER_NAME"])) {
 	$arrFilter = array();
 }
-else
-{
+else {
 	global ${$arParams["FILTER_NAME"]};
 	global ${$arParams["FILTER_NAME"].'Add'};
 	$arrFilter = ${$arParams["FILTER_NAME"]};
@@ -71,29 +71,22 @@ if($arParams["NEWS_COUNT"]<=0)
 
 $arParams["DETAIL_URL"]=trim($arParams["DETAIL_URL"]);
 
-
 if($arParams["ELEMENT_STATUS"]) $arParams["ELEMENT_STATUS"] = intval($arParams["ELEMENT_STATUS"]);
 
 $arParams["ACTIVE_DATE_FORMAT"] = trim($arParams["ACTIVE_DATE_FORMAT"]);
 if(strlen($arParams["ACTIVE_DATE_FORMAT"])<=0)
 	$arParams["ACTIVE_DATE_FORMAT"] = $DB->DateFormatToPHP(CSite::GetDateFormat("SHORT"));
 
-
-	
-if($this->StartResultCache(false, array(($arParams["CACHE_GROUPS"]==="N"? false: $USER->GetGroups()), $bUSER_HAVE_ACCESS, $arrFilter, $arrFilterAdd)))
-{
-	if(!CModule::IncludeModule("iblock"))
-	{
+if($this->StartResultCache(false, array(($arParams["CACHE_GROUPS"]==="N"? false: $USER->GetGroups()), $bUSER_HAVE_ACCESS, $arrFilter, $arrFilterAdd))) {
+	if(!CModule::IncludeModule("iblock")) {
 		$this->AbortResultCache();
 		ShowError(GetMessage("IBLOCK_MODULE_NOT_INSTALLED"));
 		return;
 	}
 	
-	
 	$arResult=array(
 		"ITEMS"=>array(),
 	);
-	
 	
 	$arSelect = array_merge($arParams["FIELD_CODE"], array(
 		"ID",
@@ -113,13 +106,9 @@ if($this->StartResultCache(false, array(($arParams["CACHE_GROUPS"]==="N"? false:
 	
 	);
 	
-	
-	
 	if(count($arParams["SECTIONS"])>0) {
 		$arFilter['SECTION_ID'] =  $arParams["SECTIONS"];
 	}
-	
-	
 	
 	if($arParams["AVIABLE_CODE"]) {
 		$arFilter['>PROPERTY_'.$arParams["AVIABLE_CODE"]] = 0;
@@ -135,11 +124,8 @@ if($this->StartResultCache(false, array(($arParams["CACHE_GROUPS"]==="N"? false:
 		  $arResult['STATUS'] = $prop_fields;
 		   $arResult['STATUS']['DATA'] =  CIBlockPropertyEnum::GetByID($arParams["ELEMENT_STATUS"]);
 		}	
-		
-
 	}
 	
-
 	$arOrder = array(
 		$arParams["SORT_BY1"]=>$arParams["SORT_ORDER1"],
 		$arParams["SORT_BY2"]=>$arParams["SORT_ORDER2"],
@@ -153,8 +139,9 @@ if($this->StartResultCache(false, array(($arParams["CACHE_GROUPS"]==="N"? false:
 	$rsItems->SetUrlTemplates($arParams["DETAIL_URL"]);
 	$currentCount  = 0;
 	$ids = array();
-	while($artItem = $rsItems->GetNextElement())
-	{   $arItem = $artItem->GetFields();
+	
+	while($artItem = $rsItems->GetNextElement()) {   
+		$arItem = $artItem->GetFields();
 		$arButtons = CIBlock::GetPanelButtons(
 			$arItem["IBLOCK_ID"],
 			$arItem["ID"],
@@ -180,9 +167,7 @@ if($this->StartResultCache(false, array(($arParams["CACHE_GROUPS"]==="N"? false:
 		$arResult["LAST_ITEM_IBLOCK_ID"]=$arItem["IBLOCK_ID"];
 		
 		$currentCount ++;
-		
 	}
-	
 	
 	if( ($currentCount < $arParams["NEWS_COUNT"]) && isset($arrFilterAdd)) {
 		$adFilter = array_merge($arFilter, $arrFilterAdd);
@@ -280,10 +265,10 @@ if($this->StartResultCache(false, array(($arParams["CACHE_GROUPS"]==="N"? false:
 		$arResult["SECTION"] = $arRes;
 	}
 	
-	
 	$this->SetResultCacheKeys(array(
 		"LAST_ITEM_IBLOCK_ID",
 	));
+	
 	$this->IncludeComponentTemplate();
 }
 
@@ -292,9 +277,21 @@ if(
 	&& $USER->IsAuthorized()
 	&& $APPLICATION->GetShowIncludeAreas()
 	&& CModule::IncludeModule("iblock")
-)
-{
+) {
 	$arButtons = CIBlock::GetPanelButtons($arResult["LAST_ITEM_IBLOCK_ID"], 0, 0, array("SECTION_BUTTONS"=>false));
 	$this->AddIncludeAreaIcons(CIBlock::GetComponentMenu($APPLICATION->GetPublicShowMode(), $arButtons));
 }
-?>
+
+if($arParams['AJAX']) {
+	$this->setFrameMode(false);
+	define("BX_COMPRESSION_DISABLED", true);
+	ob_start();
+	$this->IncludeComponentTemplate("ajax");
+	$json = ob_get_contents();
+	$APPLICATION->RestartBuffer();
+	while(ob_end_clean());
+	header('Content-Type: application/json; charset='.LANG_CHARSET);
+	echo $json;
+	CMain::FinalActions();
+	die();
+}
