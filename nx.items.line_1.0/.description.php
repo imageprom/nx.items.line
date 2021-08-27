@@ -7,12 +7,12 @@ $arComponentDescription = array(
 	"ICON" => "/images/news_line.gif",
 	"SORT" => 10,
 	"CACHE_PATH" => "Y",
-	"PATH" => array(
-		"ID" => "content",
-		"CHILD" => array(
-			"ID" => "news",
-			"NAME" => GetMessage("T_IBLOCK_DESC_NEWS"),
-			"SORT" => 10,
+	'PATH' => array(
+		'ID' => 'my_components',
+		'NAME' => GetMessage('IP_COMPONENTS_TITLE'),
+		'CHILD' => array(
+			'ID' => 'ip_news',
+			'NAME' => GetMessage('IP_COMPONENTS_GROUP')
 		)
 	),
 );
