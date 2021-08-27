@@ -17,4 +17,8 @@ $MESS ['T_IBLOCK_DESC_LIST_CONT'] = "Количество новостей на 
 $MESS ['T_IBLOCK_DESC_ACTIVE_DATE_FORMAT'] = "Формат показа даты";
 $MESS ['CP_BNL_FIELD_CODE'] = "Поля";
 $MESS ['CP_BNL_CACHE_GROUPS'] = "Учитывать права доступа";
+$MESS ['IP_COMPONENTS_TITLE'] = "Компоненты Имиджпром";
+$MESS ['IP_COMPONENTS_GROUP'] = "HIB";
+$MESS ['IP_COMPONENT_NAME'] = "Список элементов  ИБ 1.0";
+$MESS ['IP_COMPONENT_DESC'] = "Выводит список элементов ИБ";
 ?>
