@@ -1,7 +1,5 @@
 <?if(!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
-
 include_once('lib.php');
-
 global $DB;
 
 if(!isset($arParams['CACHE_TIME']))
@@ -54,11 +52,14 @@ foreach($arParams['SECTIONS'] as $k  =>$v)
 	if(!$v || $v == 0)
 		unset($arParams['SECTIONS'][$k]);
 
-if(!is_array($arParams['FIELD_CODE']))
-	$arParams['FIELD_CODE'] = array();
-foreach($arParams['FIELD_CODE'] as $key => $val)
-	if(!$val)
-		unset($arParams['FIELD_CODE'][$key]);
+
+$showProperty = false;
+
+if(!is_array($arParams['FIELD_CODE'])) $arParams['FIELD_CODE'] = array();
+foreach($arParams['FIELD_CODE'] as $key => $val) {
+    if(strpos($val, 'PROPERTY_') !== false) $showProperty = true;
+    if (!$val) unset($arParams['FIELD_CODE'][$key]);
+}
 
 $sortPattern = '/^(asc|desc|nulls)(,asc|,desc|,nulls){0,1}$/i';
 
@@ -122,11 +123,13 @@ if($this->StartResultCache(
 	if($arParams['AVAILABLE_CODE']) {
 		$arFilter['>PROPERTY_'.$arParams['AVAILABLE_CODE']] = 0;
 		$arSelect [] = 'PROPERTY_'.$arParams['AVAILABLE_CODE'];
+        $showProperty = true;
 	}
 	
 	if($arParams['ELEMENT_STATUS']) {
 		$arFilter['PROPERTY_STATUS'] = $arParams['ELEMENT_STATUS'];
-		$arSelect [] = 'PROPERTY_STATUS';
+		$arSelect[] = 'PROPERTY_STATUS';
+        $showProperty = true;
 		
 		$properties = CIBlockProperty::GetList(array('sort'=> 'asc', 'name' => 'asc'), array('ACTIVE' => 'Y', 'IBLOCK_ID' =>$arParams['IBLOCKS'][0], 'CODE'=>'STATUS'));
 		if ($prop_fields = $properties->GetNext()) {
@@ -154,7 +157,7 @@ if($this->StartResultCache(
 	
 	while($artItem = $rsItems->GetNextElement()) {
         $arItem = $artItem->GetFields();
-        $arItem['PROPERTIES'] = $artItem->GetProperties();
+        if($showProperty) $arItem['PROPERTIES'] = $artItem->GetProperties();
 
         NXGetData($arItem, $arParams);
         
@@ -182,7 +185,7 @@ if($this->StartResultCache(
 		while($artItem = $rsItems->GetNextElement()) {
 
             $arItem = $artItem->GetFields();
-            $arItem['PROPERTIES'] = $artItem->GetProperties();
+            if($showProperty) $arItem['PROPERTIES'] = $artItem->GetProperties();
 
             NXGetData($arItem, $arParams);
 			
@@ -213,7 +216,7 @@ if($this->StartResultCache(
 		while($artItem = $rsItems->GetNextElement()) {   
 		    
 		    $arItem = $artItem->GetFields();
-            $arItem['PROPERTIES'] = $artItem->GetProperties();
+            if($showProperty) $arItem['PROPERTIES'] = $artItem->GetProperties();
 
             NXGetData($arItem, $arParams);
 
