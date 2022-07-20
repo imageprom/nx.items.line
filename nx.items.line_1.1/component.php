@@ -1,5 +1,4 @@
 <?if(!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
-include_once('lib.php');
 global $DB;
 
 if(!isset($arParams['CACHE_TIME']))
@@ -159,7 +158,7 @@ if($this->StartResultCache(
         $arItem = $artItem->GetFields();
         if($showProperty) $arItem['PROPERTIES'] = $artItem->GetProperties();
 
-        NXGetData($arItem, $arParams);
+        $this->GetData($arItem, $arParams);
         
 		$ids[] = $arItem['ID']; 
 		$arResult['ITEMS'][] = $arItem;
@@ -187,7 +186,7 @@ if($this->StartResultCache(
             $arItem = $artItem->GetFields();
             if($showProperty) $arItem['PROPERTIES'] = $artItem->GetProperties();
 
-            NXGetData($arItem, $arParams);
+            $this->GetData($arItem, $arParams);
 			
 			$ids[] = $arItem['ID']; 
 			$arResult['ITEMS'][] = $arItem;
@@ -218,7 +217,7 @@ if($this->StartResultCache(
 		    $arItem = $artItem->GetFields();
             if($showProperty) $arItem['PROPERTIES'] = $artItem->GetProperties();
 
-            NXGetData($arItem, $arParams);
+            $this->GetData($arItem, $arParams);
 
 			$arResult['ITEMS'][] = $arItem;
 			$arResult['LAST_ITEM_IBLOCK_ID'] = $arItem['IBLOCK_ID'];
@@ -270,3 +269,4 @@ if($arParams['AJAX']) {
 	CMain::FinalActions();
 	die();
 }
+
